@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>优酷搜索框</title>
+</head>
+<body>
+    <input type="text" placeholder="输入内容" id="keyword">
+    <!--显示查询的结果-->
+    <div id="list"></div>
+
+    <script src="jQuery-3.1.0.js"></script>
+
+    <script>
+
+        //注意获取的区域
+        var div = $('#list');
+
+        $(function () {
+
+            //http://tip.soku.com/search_tip_1?jsoncallback=XBox&query=java
+            //获取输入框中内容
+            $('#keyword').keyup(function () {
+
+                var val = $('#keyword').val();
+                //动态生成查询链接
+                var url = 'http://tip.soku.com/search_tip_1?query='+val;
+
+                //alert(url);
+                //进行查询
+                queryMessage(url);
+
+                //console.log(url);
+
+            });
+
+        });
+
+        //自定义请求
+        function queryMessage(url) {
+            $.ajax({
+                type:'get',
+                url:url,
+                dataType:'jsonp',
+
+                jsonp:'jsoncallback',
+                //XBox(数据);
+//                jsonpCallback:'message',
+
+                success:function (data) {
+                    //console.log(data);
+                    var tag = '<ul>';
+                    for(var i=0;i<data.r.length;i++) {
+                        var item = data.r[i];
+                        var title = item.w;
+                        //console.log(title);
+                        tag += '<li>'+title+'</li>';
+                    }
+                    tag += '</ul>';
+                    div.html(tag);
+
+                    //连缀
+                    $(div).find('li').hover(function () {  //鼠标放上去的时候执行
+                        $(this).css('color','red');
+                    },function () {   //鼠标放移开的时候执行
+                        $(this).css('color','black');
+                    }
+                    );
+
+                },
+                error:function () {
+                    console.log('错误');
+                }
+            });
+
+        }
+    </script>
+
+</body>
+</html>
